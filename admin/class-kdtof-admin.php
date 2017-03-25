@@ -20,7 +20,7 @@
  * @subpackage Plugin_Name/admin
  * @author     Your Name <email@example.com>
  */
-class Plugin_Name_Admin {
+class kdtof_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -51,7 +51,19 @@ class Plugin_Name_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		add_action( 'admin_menu', array($this,'kdtof_menu') );
 
+	}
+
+	public function kdtof_menu() {
+		add_options_page( 'Opret Kunde', 'Kunde DB til Opgave 4', 'manage_options', 'kdtof', array($this,'kdtof_options') );
+	}
+
+	public function kdtof_options() {
+		if ( !current_user_can( 'manage_options' ) )  {
+			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+		}
+		include ( plugin_dir_path( __DIR__ ).'admin/partials/kdtof-display.php' );
 	}
 
 	/**
@@ -73,7 +85,7 @@ class Plugin_Name_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/plugin-name-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/kdtof-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -96,7 +108,7 @@ class Plugin_Name_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/plugin-name-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kdtof-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 

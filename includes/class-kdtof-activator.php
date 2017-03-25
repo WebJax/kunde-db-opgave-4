@@ -30,67 +30,29 @@ class kdtof_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-		if ( opret_db() ) {
-			if ( ! opret_tabel() ) {
-				_e ('Tabellen kunne ikke oprettes', 'kdtof_plugin');
-			}
-		} elseif {
-			_e ('Databasen kunne ikke oprettes', 'kdtof_plugin');
-		}
-	}
 
-	private opret_db() {
-		$kdtof_servername = "localhost";
-		$kdtof_username = "root";
-		$kdtof_password = "root";
-		$kdtof_oprettet = false;
-
-		// Opret forbindelse til databasen
-		$kdtof_conn = new mysqli($kdtof_servername, $kdtof_username, $kdtof_password);
-		// Check at der er forbindelse
-		if ($kdtof_conn->connect_error) {
-				die("Forbindelsen kunne ikke oprettes: " . $kdtof_conn->connect_error);
-		}
+		// Skab forbindelse til databasen
+		include ( plugin_dir_path (__DIR__).'connection.php' );
 
 		// Opret database hvis den ikke findes i forvejen
-		$kdtof_sql = "CREATE DATABASE IF NOT EXISTS kdtof";
+		$kdtof_sql = "CREATE DATABASE IF NOT EXISTS kundeDB";
 		if ($kdtof_conn->query($kdtof_sql) === TRUE) {
-				$kdtof_oprettet = true;
+			$kdtof_sql = "CREATE TABLE IF NOT EXISTS `kundeDB`.`kunde` (
+										`id` INT NOT NULL AUTO_INCREMENT ,
+										`navn` TEXT NOT NULL ,
+										`adresse` TEXT NOT NULL ,
+										`postnr` INT NOT NULL ,
+										`bynavn` TEXT NOT NULL ,
+										`telefon` INT NOT NULL , PRIMARY KEY (`id`)
+										) ENGINE = InnoDB;";
+			if ($kdtof_conn->query($kdtof_sql) !== TRUE) {
+					_e ('Tabellen kunne ikke oprettes', 'kdtof');
+			}
+		} else {
+			_e ('Databasen kunne ikke oprettes', 'kdtof');
 		}
 
-		// Luk forbindelsen og returner om den er oprettet
-		$conn->close();
-		return $kdtof_oprettet;
-	}
-
-	private opret_tabel() {
-		$kdtof_servername = "localhost";
-		$kdtof_username = "root";
-		$kdtof_password = "root";
-		$kdtof_oprettet = false;
-
-		// Opret forbindelse til databasen
-		$kdtof_conn = new mysqli($kdtof_servername, $kdtof_username, $kdtof_password);
-		// Check at der er forbindelse
-		if ($kdtof_conn->connect_error) {
-				die("Forbindelsen kunne ikke oprettes: " . $kdtof_conn->connect_error);
-		}
-
-		// Opret tabellen hvis den ikke findes i forvejen
-		$kdtof_sql = "CREATE TABLE IF NOT EXISTS `kundeDB`.`kunde` (
-									`id` INT NOT NULL AUTO_INCREMENT ,
-									`navn` TEXT NOT NULL ,
-									`adresse` TEXT NOT NULL ,
-									`postnr` INT NOT NULL ,
-									`bynavn` TEXT NOT NULL ,
-									`telefon` INT NOT NULL , PRIMARY KEY (`id`)
-									) ENGINE = InnoDB;";
-		if ($kdtof_conn->query($kdtof_sql) === TRUE) {
-				$kdtof_oprettet = true;
-		}
-
-		// Luk forbindelsen og returner om den er oprettet
-		$conn->close();
-		return $kdtof_oprettet;
+		// Luk database forbindelsen igen
+		$kdtof_conn->close();
 	}
 }
